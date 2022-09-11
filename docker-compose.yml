@@ -1,0 +1,55 @@
+services:
+  gateway:
+    container_name: gateway_arch_sw
+    image: express-gateway:1.16.x
+    links:
+      - "redis"
+    ports:
+      - 8000:8080
+      - 9876:9876
+    volumes:
+      - ./.docker/gateway.config.yml:/var/lib/eg/config/gateway.config.yml
+
+  keycloak:
+    container_name: keycloak_arch_sw
+    image: quay.io/keycloak/keycloak:19.0.1
+    command: start-dev
+    ports:
+      - 4200:8080
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - DB_VENDOR=h2
+      # volumes:
+      # - ./.docker/keycloak.conf:conf/keycloak.conf
+
+  localstack:
+    container_name: localstack_arch_sw
+    image: localstack/localstack:latest
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
+      - SERVICES=s3,dynamodb
+    ports:
+      - '4566-4597:4566-4597'
+    volumes:
+      - './.docker/localstack_setup.sh:/docker-entrypoint-initaws.d/setup.sh'
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${TEMPDIR:-/tmp/localstack}:/temp/localstack"
+
+  redis:
+    container_name: redis_arch_sw
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  core:
+    container_name: core_arch_sw
+    build: core/
+    command: "sh -c init.sh"
+    ports:
+      - 4000:4000
+    env_file:
+      - core/.env
+    volumes:
+      - ./core/:/src/app
