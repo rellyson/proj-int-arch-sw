@@ -20,8 +20,6 @@ services:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
       - DB_VENDOR=h2
-      # volumes:
-      # - ./.docker/keycloak.conf:conf/keycloak.conf
 
   localstack:
     container_name: localstack_arch_sw
