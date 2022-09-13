@@ -1,14 +1,12 @@
 services:
   gateway:
     container_name: gateway_arch_sw
-    image: express-gateway:1.16.x
-    links:
-      - "redis"
+    build: gateway
     ports:
       - 8000:8080
       - 9876:9876
     volumes:
-      - ./.docker/gateway.config.yml:/var/lib/eg/config/gateway.config.yml
+      - ./gateway:/var/lib/eg
 
   keycloak:
     container_name: keycloak_arch_sw
@@ -34,12 +32,6 @@ services:
       - './.docker/localstack_setup.sh:/docker-entrypoint-initaws.d/setup.sh'
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "${TEMPDIR:-/tmp/localstack}:/temp/localstack"
-
-  redis:
-    container_name: redis_arch_sw
-    image: redis:alpine
-    ports:
-      - 6379:6379
 
   core:
     container_name: core_arch_sw

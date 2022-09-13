@@ -1,0 +1,34 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+apiEndpoints:
+  idp:
+    host: '*'
+    paths: '/idp/*'        
+serviceEndpoints:
+  idProvider:
+    url: http://keycloak:8080/realms/pass-manager
+policies:
+  - log
+  - proxy
+  - rewrite
+pipelines:
+  default:
+    apiEndpoints:
+      - idp
+    policies:
+      - rewrite:
+          -
+            condition:
+              name: regexpmatch
+              match: ^/idp/?(.*)$
+            action:
+              rewrite: /$1 
+      - log:
+          - action:
+              message: ${req.method} ${req.originalUrl}
+      - proxy:
+          - action:
+              serviceEndpoint: idProvider
+              changeOrigin: true

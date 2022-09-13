@@ -1,7 +1,0 @@
-http:
-  port: 8080
-apiEndpoints:
-  idp:
-    host: keycloak:4200
-  core:
-    host: core:4000
