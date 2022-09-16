@@ -1,31 +1,22 @@
-import {
-  Box,
-  Button,
-  Center,
-  Image,
-  Input,
-  Stack,
-  Link,
-  useToast,
-} from '@chakra-ui/react'
-import { FaGoogle, FaGithub } from 'react-icons/fa'
+import { Box, Button, Center, Image, Input, Stack, useToast } from '@chakra-ui/react'
 import React, { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 import ColorModeToggle from '../../components/ColorModeToggle'
 import { authenticate } from '../../services/auth'
+import SsoButton from '../../components/SsoButton'
 
 const SignIn: FC = () => {
   const navigate = useNavigate()
   const toast = useToast()
 
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const submit = async () => {
     setLoading(true)
-    await authenticate(email, password)
+    await authenticate(username, password)
       .then(() => {
         setLoading(false)
         navigate('/', { replace: true })
@@ -57,11 +48,11 @@ const SignIn: FC = () => {
         <Image ml="33%" src={logo} w={20} h={20} mb={3}></Image>
         <Stack spacing={4}>
           <Input
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
             bg="whiteAlpha.800"
             color="blackAlpha.900"
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Nome de usuário"
             _placeholder={{ color: 'blackAlpha.600' }}
           />
           <Input
@@ -83,35 +74,13 @@ const SignIn: FC = () => {
             Entrar
           </Button>
         </Stack>
-        <Stack spacing={2} mt="8">
-          <Button
-            bg="blue.600"
-            _active={{ bg: 'blue.700' }}
-            _hover={{ bg: 'blue.700' }}
-            color="whiteAlpha.900"
-            leftIcon={<FaGoogle />}
-            w={60}
-          >
-            Entrar com o Google
-          </Button>
-          <Button
-            bg="gray.800"
-            _active={{ bg: 'gray.900' }}
-            _hover={{ bg: 'gray.900' }}
-            color="whiteAlpha.900"
-            leftIcon={<FaGithub />}
-            w={60}
-          >
-            Entrar com o Github
-          </Button>
-
-          <Link
-            onClick={() => navigate('/signup', { replace: true })}
-            fontSize="xs"
-            mt="2"
-          >
-            Não tem uma conta ainda? Clique aqui
-          </Link>
+        <Stack spacing={2} mt="4">
+          <SsoButton
+            width={500}
+            height={800}
+            left={(window.screen.width - 500) / 2}
+            top={(window.screen.height - 800) / 2}
+          />
         </Stack>
       </Box>
     </Center>

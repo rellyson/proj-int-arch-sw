@@ -13,6 +13,7 @@ policies:
   - log
   - proxy
   - rewrite
+  - cors
 pipelines:
   default:
     apiEndpoints:
@@ -25,6 +26,9 @@ pipelines:
               match: ^/idp/?(.*)$
             action:
               rewrite: /$1 
+      - cors:
+          - action:
+              origin: "*"
       - log:
           - action:
               message: ${req.method} ${req.originalUrl}

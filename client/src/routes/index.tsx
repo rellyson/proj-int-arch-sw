@@ -4,15 +4,15 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from '../pages/Home'
 import NotFound from '../pages/NotFound'
 import SignIn from '../pages/SignIn'
-import SignUp from '../pages/SignUp'
 import { RequireAuth } from './RequireAuth'
+import { SsoCallback } from './SsoCallback'
 
 const RouteStack: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/sso/callback" element={<SsoCallback />} />
 
         <Route
           path="/"
