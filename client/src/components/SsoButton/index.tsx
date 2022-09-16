@@ -1,23 +1,18 @@
-import { Button, Link } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 import React, { FC } from 'react'
 import { MdLogin } from 'react-icons/md'
 import config from '../../config'
 
-interface SsoButtonProps {
-  width: number
-  height: number
-  left: number
-  top: number
-}
-
-const SsoButton: FC<SsoButtonProps> = (props: SsoButtonProps) => {
+const SsoButton: FC = () => {
   return (
     <Button
       onClick={() =>
         window.open(
-          config.IDP_SIGNUP_LINK,
+          config.SSO_URL,
           'popup',
-          `width=${props.width},height=${props.height},scrollbars=no,resizable=no,left=${props.left},top=${props.top}`,
+          `width=500,height=800,scrollbars=no,resizable=no,left=${
+            (window.screen.width - 500) / 2
+          },top=${(window.screen.height - 800) / 2}`,
         )
       }
       bg="blue.600"

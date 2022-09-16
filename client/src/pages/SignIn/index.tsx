@@ -75,12 +75,7 @@ const SignIn: FC = () => {
           </Button>
         </Stack>
         <Stack spacing={2} mt="4">
-          <SsoButton
-            width={500}
-            height={800}
-            left={(window.screen.width - 500) / 2}
-            top={(window.screen.height - 800) / 2}
-          />
+          <SsoButton />
         </Stack>
       </Box>
     </Center>

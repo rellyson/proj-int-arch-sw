@@ -35,4 +35,4 @@ pipelines:
       - proxy:
           - action:
               serviceEndpoint: idProvider
-              changeOrigin: true
+              changeOrigin: false
