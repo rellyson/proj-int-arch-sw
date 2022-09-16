@@ -29,29 +29,33 @@ export class CryptoService {
     return await bcrypt.compare(value, hash);
   }
 
-  async encrypt(value: any, secret: string): Promise<string> {
-    const iv = Buffer.from(randomBytes(8)).toString('hex');
+  async encrypt(
+    iv: Buffer,
+    value: string,
+    secret: string,
+  ): Promise<{ hash: string; encryptedValue: string }> {
     const key = (await promisify(scrypt)(secret, 'salt', 32)) as Buffer;
     const cipher = createCipheriv('aes-256-ctr', key, iv);
+    const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
 
-    const bufferedResult = Buffer.concat([
-      cipher.update(value),
-      cipher.final(),
-    ]);
-
-    return bufferedResult.toString();
+    return {
+      hash: iv.toString('hex'),
+      encryptedValue: encrypted.toString('hex'),
+    };
   }
 
-  async decrypt(value: any, secret: string): Promise<string> {
-    const iv = Buffer.from(randomBytes(8)).toString('hex');
+  async decrypt(value: string, hash: string, secret: string): Promise<string> {
     const key = (await promisify(scrypt)(secret, 'salt', 32)) as Buffer;
-    const decipher = createDecipheriv('aes-256-ctr', key, iv);
-
-    const decryptedValue = Buffer.concat([
-      decipher.update(value),
+    const decipher = createDecipheriv(
+      'aes-256-ctr',
+      key,
+      Buffer.from(hash, 'hex'),
+    );
+    const decrpytedValue = Buffer.concat([
+      decipher.update(Buffer.from(value, 'hex')),
       decipher.final(),
     ]);
 
-    return decryptedValue.toString();
+    return decrpytedValue.toString();
   }
 }

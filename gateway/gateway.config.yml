@@ -3,19 +3,39 @@ http:
 admin:
   port: 9876
 apiEndpoints:
+  core:
+    host: '*'
+    paths: '/api/*' 
   idp:
     host: '*'
-    paths: '/idp/*'        
+    paths: '/idp/*'          
 serviceEndpoints:
   idProvider:
     url: http://keycloak:8080/realms/pass-manager
+  coreApi:
+    url: http://core:3000
 policies:
   - log
   - proxy
   - rewrite
   - cors
 pipelines:
-  default:
+  coreApi:
+    apiEndpoints:
+      - core
+    policies:
+      - cors:
+          - action:
+              origin: "*"
+      - log:
+          - action:
+              message: ${req.method} ${req.originalUrl}
+      - proxy:
+          - action:
+              serviceEndpoint: coreApi
+              changeOrigin: true
+
+  identityProvider:
     apiEndpoints:
       - idp
     policies:

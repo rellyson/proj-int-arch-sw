@@ -2,7 +2,7 @@ import * as dynamoose from 'dynamoose';
 import { Item } from 'dynamoose/dist/Item';
 
 export class Vault extends Item {
-  id: number;
+  id: string;
   secret: string;
   userId: string;
   createdAt: Date;
@@ -11,7 +11,7 @@ export class Vault extends Item {
 }
 
 export const VaultModel = dynamoose.model<Vault>('Vault', {
-  id: Number,
+  id: String,
   secret: String,
   userId: String,
   createdAt: Date,
