@@ -59,3 +59,14 @@ export const getTokenInfo = async (): Promise<UserInfo> => {
       throw err
     })
 }
+
+export const generatePassword = (length: number): string => {
+  const availableChars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!&#+=-'
+  let secret = ''
+
+  for (let i = 0; i < length; i++)
+    secret += availableChars.charAt(Math.floor(Math.random() * availableChars.length))
+
+  return secret
+}

@@ -27,11 +27,11 @@ services:
       - EDGE_PORT=4566
       - SERVICES=s3,dynamodb
     ports:
-      - '4566-4597:4566-4597'
+      - 4566-4597:4566-4597
     volumes:
-      - './.docker/localstack_setup.sh:/docker-entrypoint-initaws.d/setup.sh'
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "${TEMPDIR:-/tmp/localstack}:/temp/localstack"
+      - ./.docker/localstack_setup.sh:/docker-entrypoint-initaws.d/setup.sh
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '${TEMPDIR:-/tmp/localstack}:/temp/localstack'
 
   core:
     container_name: core_arch_sw

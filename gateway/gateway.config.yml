@@ -4,16 +4,16 @@ admin:
   port: 9876
 apiEndpoints:
   core:
-    host: '*'
-    paths: '/api/*' 
+    host: "*"
+    paths: "/core/*"
   idp:
-    host: '*'
-    paths: '/idp/*'          
+    host: "*"
+    paths: "/idp/*"
 serviceEndpoints:
   idProvider:
     url: http://keycloak:8080/realms/pass-manager
   coreApi:
-    url: http://core:3000
+    url: http://core:4000
 policies:
   - log
   - proxy
@@ -24,6 +24,12 @@ pipelines:
     apiEndpoints:
       - core
     policies:
+      - rewrite:
+          - condition:
+              name: regexpmatch
+              match: ^/core/?(.*)$
+            action:
+              rewrite: /$1
       - cors:
           - action:
               origin: "*"
@@ -33,19 +39,18 @@ pipelines:
       - proxy:
           - action:
               serviceEndpoint: coreApi
-              changeOrigin: true
+              changeOrigin: false
 
   identityProvider:
     apiEndpoints:
       - idp
     policies:
       - rewrite:
-          -
-            condition:
+          - condition:
               name: regexpmatch
               match: ^/idp/?(.*)$
             action:
-              rewrite: /$1 
+              rewrite: /$1
       - cors:
           - action:
               origin: "*"

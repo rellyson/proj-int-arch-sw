@@ -2,43 +2,53 @@ import { Injectable } from '@nestjs/common';
 import { Vault, VaultModel } from '../entities/Vault';
 import { v4 } from 'uuid';
 import { ConditionInitializer } from 'dynamoose/dist/Condition';
-import { VaultDTO } from '../dtos/vault.dto';
+import { SerializerOptions } from 'dynamoose/dist/Serializer';
 
 @Injectable()
 export class VaultRepository {
-  async insert(data: VaultDTO): Promise<Partial<Vault>> {
+  async insert(
+    data: Partial<Vault>,
+    serialize?: SerializerOptions,
+  ): Promise<Partial<Vault>> {
     const vault = await VaultModel.create({
-      id: v4(),
-      secret: data.secret,
-      userId: data.userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      Id: v4(),
+      Secret: data.Secret,
+      UserId: data.UserId,
+      CreationDate: new Date(),
+      UpdateDate: new Date(),
     });
 
-    return vault.serialize({ exclude: ['secret'] });
+    return vault.serialize(serialize);
   }
 
-  async get(id: string): Promise<Partial<Vault> | null> {
-    const vault = await VaultModel.get(id);
-    if (!vault) return null;
+  async get(
+    id: string,
+    serialize?: SerializerOptions,
+  ): Promise<Partial<Vault> | null> {
+    return await VaultModel.query({ Id: { eq: id } })
+      .exec()
+      .then((vaults) => {
+        if (vaults.length > 1) return null;
 
-    return vault;
+        return vaults[0].serialize(serialize);
+      });
   }
 
-  async query(options: ConditionInitializer): Promise<Partial<Vault[]>> {
+  async scan(
+    options: ConditionInitializer,
+    serialize?: SerializerOptions,
+  ): Promise<Partial<Vault[]>> {
     const vaults: Partial<Vault[]> = [];
 
-    return VaultModel.query(options)
+    return await VaultModel.scan(options)
+      .all()
       .exec()
       .then((response) => {
         response?.forEach((vault) => {
-          vaults.push(vault.serialize({ exclude: ['secret'] }) as Vault);
+          vaults.push(vault.serialize(serialize) as Vault);
         });
-        return vaults;
-      })
 
-      .catch((err) => {
-        throw err;
+        return vaults;
       });
   }
 }

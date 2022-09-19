@@ -1,37 +1,77 @@
-import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Param,
+  UseInterceptors,
+  Delete,
+  Patch,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { User } from 'src/shared/decorators/user.decorator';
 import { IdentityGuard } from 'src/shared/guards/identity.guard';
+import { Vault } from './decorators/vault.decorator';
+import { VaultItemDTO } from './dtos/vault-item.dto';
+import { VaultInterceptor } from './interceptors/vault.interceptor';
 import { VaultsService } from './vaults.service';
 
 @Controller('vaults')
 @UseGuards(IdentityGuard)
+@UseInterceptors(VaultInterceptor)
 export class VaultsController {
   constructor(private vaultService: VaultsService) {}
 
   @Post()
-  async createVault(@User() user: { sub: string }) {
-    return await this.vaultService.createVault({ userId: user.sub });
+  @HttpCode(HttpStatus.CREATED)
+  async createVault(@User('sub') userId: string) {
+    return await this.vaultService.createVault({ userId });
   }
 
   @Get()
-  async getUserVault(@User() user: { sub: string }) {
-    return await this.vaultService.getUserVault(user.sub);
+  async getUserVault(@User('sub') userId: string) {
+    return await this.vaultService.getUserVault(userId);
   }
 
-  @Post('/:id/objects')
-  async createVaultObject(
-    @Param('id') vaultId: string,
-    @Body() body: { key: string; content: string },
+  @Post('/item')
+  @HttpCode(HttpStatus.CREATED)
+  async createVaultItem(
+    @Vault('Id') vaultId: string,
+    @Body() body: Partial<VaultItemDTO>,
   ) {
-    return await this.vaultService.createVaultObject({
+    return await this.vaultService.createVaultItem({
       vaultId,
-      key: body.key,
-      content: body.content,
+      name: body.name!,
+      usernameOrEmail: body.usernameOrEmail!,
+      password: body.password!,
+      link: body.link!,
     });
   }
 
-  @Get('/:id/objects')
-  async getVaultObjects(@Param('id') vaultId: string) {
-    return await this.vaultService.getVaultObjects(vaultId);
+  @Get('/items')
+  async getVaultItems(@Vault('Id') vaultId: string) {
+    return await this.vaultService.getVaultItems(vaultId);
+  }
+
+  @Patch('/item/:id')
+  async updateVaultItem(
+    @Vault('id') vaultId: string,
+    @Body() body: Partial<VaultItemDTO>,
+  ) {
+    return await this.vaultService.createVaultItem({
+      vaultId,
+      name: body.name!,
+      usernameOrEmail: body.usernameOrEmail!,
+      password: body.password!,
+      link: body.link!,
+    });
+  }
+
+  @Delete('/item/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteVaultItem(@Param('id') itemId: string) {
+    return await this.vaultService.deleteVaultItem(itemId);
   }
 }
