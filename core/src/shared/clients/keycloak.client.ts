@@ -12,6 +12,7 @@ export class KeycloakClient {
 
   getTokenInfo(token: string): Observable<any> {
     const keycloakUrl = this.configService.get<string>('KEYCLOAK_URL')!;
+
     return this.httpService.get('/protocol/openid-connect/userinfo?', {
       baseURL: keycloakUrl,
       headers: {

@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { createCipheriv, createDecipheriv, randomBytes, scrypt } from 'crypto';
+import { createCipheriv, createDecipheriv, scrypt } from 'crypto';
 import { promisify } from 'util';
 
 @Injectable()
 export class CryptoService {
+  constructor(private configService: ConfigService) {}
+
   generateSecret(length: number): string {
+    let secret = '';
     const availableChars =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!&#+=-';
-    let secret = '';
 
     for (let i = 0; i < length; i++)
       secret += availableChars.charAt(
@@ -34,8 +37,11 @@ export class CryptoService {
     value: string,
     secret: string,
   ): Promise<{ hash: string; encryptedValue: string }> {
+    const encryptionAlgorithm = this.configService.get<string>(
+      'ENCRYPTION_ALGORITHM',
+    )!;
     const key = (await promisify(scrypt)(secret, 'salt', 32)) as Buffer;
-    const cipher = createCipheriv('aes-256-ctr', key, iv);
+    const cipher = createCipheriv(encryptionAlgorithm, key, iv);
     const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
 
     return {
@@ -45,17 +51,20 @@ export class CryptoService {
   }
 
   async decrypt(value: string, hash: string, secret: string): Promise<string> {
+    const encryptionAlgorithm = this.configService.get<string>(
+      'ENCRYPTION_ALGORITHM',
+    )!;
     const key = (await promisify(scrypt)(secret, 'salt', 32)) as Buffer;
     const decipher = createDecipheriv(
-      'aes-256-ctr',
+      encryptionAlgorithm,
       key,
       Buffer.from(hash, 'hex'),
     );
-    const decrpytedValue = Buffer.concat([
+    const decryptedValue = Buffer.concat([
       decipher.update(Buffer.from(value, 'hex')),
       decipher.final(),
     ]);
 
-    return decrpytedValue.toString();
+    return decryptedValue.toString();
   }
 }

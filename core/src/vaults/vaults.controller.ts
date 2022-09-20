@@ -11,8 +11,8 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { User } from 'src/shared/decorators/user.decorator';
-import { IdentityGuard } from 'src/shared/guards/identity.guard';
+import { User } from '../shared/decorators/user.decorator';
+import { IdentityGuard } from '../shared/guards/identity.guard';
 import { Vault } from './decorators/vault.decorator';
 import { VaultItemDTO } from './dtos/vault-item.dto';
 import { VaultInterceptor } from './interceptors/vault.interceptor';
@@ -57,11 +57,11 @@ export class VaultsController {
 
   @Patch('/item/:id')
   async updateVaultItem(
+    @Param('id') itemId: string,
     @Vault('id') vaultId: string,
     @Body() body: Partial<VaultItemDTO>,
   ) {
-    return await this.vaultService.createVaultItem({
-      vaultId,
+    return await this.vaultService.updateVaultItem(itemId, vaultId, {
       name: body.name!,
       usernameOrEmail: body.usernameOrEmail!,
       password: body.password!,

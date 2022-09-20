@@ -1,11 +1,9 @@
 http:
   port: 8080
-admin:
-  port: 9876
 apiEndpoints:
   core:
     host: "*"
-    paths: "/core/*"
+    paths: "/api/core/*"
   idp:
     host: "*"
     paths: "/idp/*"
@@ -27,7 +25,7 @@ pipelines:
       - rewrite:
           - condition:
               name: regexpmatch
-              match: ^/core/?(.*)$
+              match: ^/api/core/?(.*)$
             action:
               rewrite: /$1
       - cors:
@@ -39,7 +37,7 @@ pipelines:
       - proxy:
           - action:
               serviceEndpoint: coreApi
-              changeOrigin: false
+              changeOrigin: true
 
   identityProvider:
     apiEndpoints:
@@ -60,4 +58,4 @@ pipelines:
       - proxy:
           - action:
               serviceEndpoint: idProvider
-              changeOrigin: false
+              changeOrigin: true

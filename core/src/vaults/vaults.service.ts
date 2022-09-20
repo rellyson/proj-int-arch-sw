@@ -4,11 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { CryptoService } from 'src/shared/services/crypto.service';
+import { CryptoService } from '../shared/services/crypto.service';
 import { VaultItemDTO } from './dtos/vault-item.dto';
 import { VaultDTO } from './dtos/vault.dto';
 import { VaultModel } from './entities/Vault';
-import { VaultItem, VaultItemModel } from './entities/VaultItem';
+import { VaultItem } from './entities/VaultItem';
 import { VaultItemRepository } from './repositories/vault-item.repo';
 import { VaultRepository } from './repositories/vault.repo';
 
