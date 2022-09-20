@@ -19,9 +19,7 @@ aws dynamodb --endpoint-url=http://localhost:4566 --region=us-east-1 create-tabl
     --table-name VaultItem \
     --attribute-definitions \
         AttributeName=Id,AttributeType=S \
-        AttributeName=CreationDate,AttributeType=N \
     --key-schema \
         AttributeName=Id,KeyType=HASH \
-        AttributeName=CreationDate,KeyType=RANGE \
     --provisioned-throughput \
         ReadCapacityUnits=10,WriteCapacityUnits=5

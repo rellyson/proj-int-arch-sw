@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { ExternalLinkIcon, MoonIcon, SunIcon } from '@chakra-ui/icons'
 import {
   Avatar,
   Flex,
@@ -12,11 +12,12 @@ import {
   Image,
   Text,
 } from '@chakra-ui/react'
-import { MdLogout } from 'react-icons/md'
+import { MdLogout, MdManageAccounts } from 'react-icons/md'
 import React, { FC, useEffect } from 'react'
 import { logOut } from '../../services/auth'
 import { UserInfo } from '../../services/auth'
 import logo from '../../assets/logo.png'
+import config from '../../config'
 
 const NavBar: FC = () => {
   let userInfo: UserInfo = {
@@ -28,6 +29,10 @@ const NavBar: FC = () => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   useEffect(() => {}, [])
+
+  const showPreferences = () => {
+    window.open(`${config.IDP_URL}/account/#/personal-info`, '_blank')
+  }
 
   return (
     <Flex
@@ -56,6 +61,14 @@ const NavBar: FC = () => {
               icon={colorMode === 'light' ? <SunIcon /> : <MoonIcon />}
             >
               Modo {colorMode === 'light' ? 'escuro' : 'claro'}
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                showPreferences()
+              }}
+              icon={<MdManageAccounts size="16" />}
+            >
+              Preferências da conta <ExternalLinkIcon ml="2px" />
             </MenuItem>
             <MenuDivider />
             <MenuItem

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { ConditionInitializer } from 'dynamoose/dist/Condition';
 import { VaultItem, VaultItemModel } from '../entities/VaultItem';
@@ -29,13 +29,9 @@ export class VaultItemRepository {
     id: string,
     serialize?: SerializerOptions,
   ): Promise<Partial<VaultItem> | null> {
-    return await VaultItemModel.query({ Id: { eq: id } })
-      .exec()
-      .then((items) => {
-        if (items.length > 1) return null;
+    const vaultItem = await VaultItemModel.get(id);
 
-        return items[0].serialize(serialize);
-      });
+    return vaultItem.serialize(serialize);
   }
 
   async scan(
@@ -65,6 +61,12 @@ export class VaultItemRepository {
   }
 
   async remove(id: string) {
-    return await VaultItemModel.delete(id, { return: 'request' });
+    return await VaultItemModel.get(id).then((item) => {
+      if (!item) {
+        throw new NotFoundException('item does not exists');
+      }
+
+      return VaultItemModel.delete(item.Id);
+    });
   }
 }
