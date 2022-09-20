@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 import ColorModeToggle from '../../components/ColorModeToggle'
 import { authenticate } from '../../services/auth'
-import SsoButton from '../../components/SsoButton'
+import config from '../../config'
+import { MdLogin } from 'react-icons/md'
 
 const SignIn: FC = () => {
   const navigate = useNavigate()
@@ -75,7 +76,17 @@ const SignIn: FC = () => {
           </Button>
         </Stack>
         <Stack spacing={2} mt="4">
-          <SsoButton />
+          <Button
+            onClick={() => (window.location.href = config.IDP_SSO_URL)}
+            bg="blue.600"
+            _active={{ bg: 'blue.700' }}
+            _hover={{ bg: 'blue.700' }}
+            color="whiteAlpha.900"
+            leftIcon={<MdLogin />}
+            w={60}
+          >
+            Entrar com Single Sign-On
+          </Button>
         </Stack>
       </Box>
     </Center>

@@ -24,12 +24,6 @@ import { VaultsService } from './vaults.service';
 export class VaultsController {
   constructor(private vaultService: VaultsService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async createVault(@User('sub') userId: string) {
-    return await this.vaultService.createVault({ userId });
-  }
-
   @Get()
   async getUserVault(@User('sub') userId: string) {
     return await this.vaultService.getUserVault(userId);

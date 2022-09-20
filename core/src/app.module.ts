@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
 import { SharedModule } from './shared/shared.module';
 import { VaultsModule } from './vaults/vaults.module';
 
@@ -12,4 +13,8 @@ import { VaultsModule } from './vaults/vaults.module';
     VaultsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

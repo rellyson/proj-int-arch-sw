@@ -20,15 +20,6 @@ export class VaultsService {
     private cryptoService: CryptoService,
   ) {}
 
-  async createVault(data: VaultDTO) {
-    const secret = this.cryptoService.generateSecret(128);
-
-    return await this.vaultRepo.insert(
-      { UserId: data.userId, Secret: secret },
-      { exclude: ['Secret'] },
-    );
-  }
-
   async getUserVault(userId: string) {
     const vault = await this.vaultRepo.scan(
       { UserId: { eq: userId } },
@@ -83,7 +74,7 @@ export class VaultsService {
       })
       .then(async (vaultItems) => {
         if (vaultItems.length < 1) {
-          throw new NotFoundException('vault has no registered item');
+          return decryptedItems;
         }
 
         for await (const vaultItem of vaultItems) {

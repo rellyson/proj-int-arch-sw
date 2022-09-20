@@ -15,7 +15,7 @@ import {
 import { MdLogout } from 'react-icons/md'
 import React, { FC, useEffect } from 'react'
 import { logOut } from '../../services/auth'
-import { UserInfo } from '../../services/user'
+import { UserInfo } from '../../services/auth'
 import logo from '../../assets/logo.png'
 
 const NavBar: FC = () => {

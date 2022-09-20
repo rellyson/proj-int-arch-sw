@@ -4,6 +4,7 @@ import {
   FormLabel,
   IconButton,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -15,17 +16,19 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import React, { FC } from 'react'
-import { RepeatIcon } from '@chakra-ui/icons'
+import { RepeatIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { BiHide, BiShow } from 'react-icons/bi'
 import { generatePassword } from '../../services/auth'
 import { createVaultItem } from '../../services/vaults'
+import { formatDate } from '../../utils/date'
 
 interface NewItemModalProps {
   isOpen: boolean
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+  setVaultItems: React.Dispatch<any>
 }
 
-const NewItemModal: FC<NewItemModalProps> = ({ isOpen, setOpenModal }) => {
+const NewItemModal: FC<NewItemModalProps> = ({ isOpen, setOpenModal, setVaultItems }) => {
   const toast = useToast()
   const { onClose } = useDisclosure()
   const [name, setName] = React.useState('')
@@ -43,9 +46,25 @@ const NewItemModal: FC<NewItemModalProps> = ({ isOpen, setOpenModal }) => {
   const submit = async () => {
     setIsLoading(true)
     await createVaultItem(name, username, password, link)
-      .then(() => {
+      .then((item) => {
         setIsLoading(false)
         setOpenModal(false)
+        setVaultItems((current: any) => [
+          ...current,
+          {
+            Id: item.Id,
+            Nome: item.Name,
+            Usuário: item.UsernameOrEmail,
+            Senha: item.Password,
+            Link: (
+              <Link href={item.Link} isExternal>
+                Abrir link <ExternalLinkIcon mx="2px" />
+              </Link>
+            ),
+            'Criado em': formatDate(new Date(item.CreationDate)),
+          },
+        ])
+
         toast({
           title: 'Novo item criado com sucesso!',
           status: 'success',

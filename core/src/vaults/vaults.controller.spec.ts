@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CryptoService } from '../shared/services/crypto.service';
 import { KeycloakClient } from '../shared/clients/keycloak.client';
 import { VaultRepository } from './repositories/vault.repo';
 import { VaultsController } from './vaults.controller';
@@ -22,6 +23,13 @@ describe('VaultsController', () => {
           provide: VaultRepository,
           useValue: {
             scan: jest.fn(),
+            insert: jest.fn(),
+          },
+        },
+        {
+          provide: CryptoService,
+          useValue: {
+            generateSecret: jest.fn(),
           },
         },
         {
@@ -40,31 +48,6 @@ describe('VaultsController', () => {
 
     controller = module.get<VaultsController>(VaultsController);
     service = module.get<VaultsService>(VaultsService);
-  });
-
-  describe('when calling POST /vaults', () => {
-    it('should return succesfully', async () => {
-      const fakeVault = {
-        Id: '1',
-        UserId: '1',
-      };
-      jest
-        .spyOn(service, 'createVault')
-        .mockImplementation(() => Promise.resolve(fakeVault));
-      const response = await controller.createVault('1');
-
-      expect(response).toStrictEqual(fakeVault);
-    });
-
-    it('should return an error if service throws', async () => {
-      jest
-        .spyOn(service, 'createVault')
-        .mockImplementation(() => Promise.reject(new Error()));
-
-      await controller.createVault('1').catch((err) => {
-        expect(err).toBeInstanceOf(Error);
-      });
-    });
   });
 
   describe('when calling GET /vaults', () => {

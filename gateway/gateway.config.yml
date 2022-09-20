@@ -9,7 +9,7 @@ apiEndpoints:
     paths: "/idp/*"
 serviceEndpoints:
   idProvider:
-    url: http://keycloak:8080/realms/pass-manager
+    url: http://keycloak:8080
   coreApi:
     url: http://core:4000
 policies:
@@ -33,7 +33,7 @@ pipelines:
               origin: "*"
       - log:
           - action:
-              message: ${req.method} ${req.originalUrl}
+              message: ${req.ip} - ${req.method} ${req.originalUrl} ${res.statusCode}
       - proxy:
           - action:
               serviceEndpoint: coreApi
@@ -54,7 +54,7 @@ pipelines:
               origin: "*"
       - log:
           - action:
-              message: ${req.method} ${req.originalUrl}
+              message: ${req.ip} - ${req.method} ${req.originalUrl} ${res.statusCode}
       - proxy:
           - action:
               serviceEndpoint: idProvider

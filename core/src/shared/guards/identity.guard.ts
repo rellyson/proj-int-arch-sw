@@ -1,9 +1,16 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+} from '@nestjs/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import { KeycloakClient } from '../clients/keycloak.client';
 
 @Injectable()
 export class IdentityGuard implements CanActivate {
+  private logger = new Logger('IdentityGuardLogger');
+
   constructor(private KeycloakClient: KeycloakClient) {}
   canActivate(
     context: ExecutionContext,
@@ -22,7 +29,8 @@ export class IdentityGuard implements CanActivate {
         request.user = res.data;
         return true;
       })
-      .catch(() => {
+      .catch((err) => {
+        this.logger.warn(`Could not identify requester: ${err.message}`);
         return false;
       });
   }

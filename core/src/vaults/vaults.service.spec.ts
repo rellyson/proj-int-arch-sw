@@ -49,29 +49,6 @@ describe('VaultsService', () => {
     cryptoService = module.get<CryptoService>(CryptoService);
   });
 
-  describe('When calling the createVault method', () => {
-    it('should create a vault', async () => {
-      jest
-        .spyOn(cryptoService, 'generateSecret')
-        .mockImplementation(() => 'a-strong-secret');
-
-      const repoInsertResult = {
-        Id: v4(),
-        UserId: '1',
-      };
-
-      jest
-        .spyOn(vaultRepo, 'insert')
-        .mockImplementation(() => Promise.resolve(repoInsertResult));
-
-      const vault = await service.createVault({
-        userId: '1',
-      });
-
-      expect(vault).toBe(repoInsertResult);
-    });
-  });
-
   describe('When calling the getUserVault method', () => {
     it('should return a vault', async () => {
       const repoInsertResult = {
@@ -183,14 +160,13 @@ describe('VaultsService', () => {
       expect(vaultItems[0]).toStrictEqual(items);
     });
 
-    it('should return an error if no items where found', async () => {
+    it('should return an empty array if no items where found', async () => {
       jest
         .spyOn(vaultItemRepo, 'scan')
         .mockImplementation(() => Promise.resolve([]));
 
-      await service.getVaultItems('1').catch((err) => {
-        expect(err).toBeInstanceOf(NotFoundException);
-      });
+      const vaultItems = await service.getVaultItems('1');
+      expect(vaultItems).toHaveLength(0);
     });
   });
 

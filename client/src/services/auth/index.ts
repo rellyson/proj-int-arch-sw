@@ -1,9 +1,22 @@
 import { axiosClient } from '../api'
 import Cookies from 'js-cookie'
-import { UserInfo } from '../user'
-import { useNavigate } from 'react-router-dom'
 
 export const SESSION_TOKEN = 'pucpass-session-token'
+
+export interface UserInfo {
+  sub?: string
+  email_verified?: boolean
+  name?: string
+  preferred_username?: string
+  given_name?: string
+  family_name?: string
+  email?: string
+  isLogged?: boolean
+}
+
+export const isAuthenticated = (): boolean => {
+  return !!Cookies.get(SESSION_TOKEN)
+}
 
 export const setSessionToken = (value: string): void => {
   const date = new Date()
@@ -13,11 +26,7 @@ export const setSessionToken = (value: string): void => {
 
 export const logOut = (): void => {
   Cookies.remove(SESSION_TOKEN)
-  window.location.reload()
-}
-
-export const isAuthenticated = (): boolean => {
-  return !!Cookies.get(SESSION_TOKEN)
+  window.location.href = '/signin'
 }
 
 export const authenticate = async (username: string, password: string): Promise<any> => {

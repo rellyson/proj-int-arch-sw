@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState } from 'react'
-import { UserInfo } from '../services/user'
+import { UserInfo } from '../services/auth'
 
 type UserProviderProps = { children: React.ReactNode }
 

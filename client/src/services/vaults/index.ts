@@ -14,7 +14,7 @@ export interface VaultItem {
 
 export const getVaultItems = async (): Promise<any> => {
   return await axiosClient
-    .get('/vaults/items', {
+    .get('/core/vaults/items', {
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${Cookies.get(SESSION_TOKEN)}`,
@@ -36,7 +36,7 @@ export const createVaultItem = async (
 ) => {
   return await axiosClient
     .post(
-      '/vaults/item',
+      '/core/vaults/item',
       {
         name,
         usernameOrEmail,
@@ -50,6 +50,38 @@ export const createVaultItem = async (
         },
       },
     )
+    .then((res) => {
+      return res.data
+    })
+    .catch((err) => {
+      throw err
+    })
+}
+
+export const getUserVault = async (): Promise<any> => {
+  return await axiosClient
+    .get('/core/vaults', {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${Cookies.get(SESSION_TOKEN)}`,
+      },
+    })
+    .then((res) => {
+      return res.data
+    })
+    .catch((err) => {
+      throw err
+    })
+}
+
+export const deleteVaultItem = async (id: string): Promise<any> => {
+  return await axiosClient
+    .delete(`/core/vaults/item/${id}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${Cookies.get(SESSION_TOKEN)}`,
+      },
+    })
     .then((res) => {
       return res.data
     })
