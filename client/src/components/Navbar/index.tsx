@@ -14,21 +14,24 @@ import {
 } from '@chakra-ui/react'
 import { MdLogout, MdManageAccounts } from 'react-icons/md'
 import React, { FC, useEffect } from 'react'
-import { logOut } from '../../services/auth'
-import { UserInfo } from '../../services/auth'
+import { getTokenInfo, logOut } from '../../services/auth'
 import logo from '../../assets/logo.png'
 import config from '../../config'
+import { useInfo } from '../../contexts/user-context'
 
 const NavBar: FC = () => {
-  let userInfo: UserInfo = {
-    sub: '1',
-    email_verified: true,
-    email: 'teste@teste.com',
-    name: 'Juriscreide do nascimento',
-  }
   const { colorMode, toggleColorMode } = useColorMode()
+  const info = useInfo()
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    const getUserTokenInfo = async () => {
+      return getTokenInfo()
+    }
+
+    getUserTokenInfo().then((tokenInfo) => {
+      info?.userInfoUpdater(tokenInfo)
+    })
+  }, [])
 
   const showPreferences = () => {
     window.open(`${config.IDP_URL}/account/#/personal-info`, '_blank')
@@ -53,9 +56,20 @@ const NavBar: FC = () => {
       <Box w="3%" display="flex" flexDirection="row">
         <Menu>
           <MenuButton>
-            <Avatar size="sm" name={userInfo.name} bg="blue.600" color="whiteAlpha.800" />
+            <Avatar
+              size="sm"
+              name={info?.userInfo.name}
+              bg="blue.600"
+              color="whiteAlpha.800"
+            />
           </MenuButton>
           <MenuList>
+            <Text ml="3" fontWeight="bold">
+              {info?.userInfo.name}
+            </Text>
+            <Text ml="3">{info?.userInfo.email}</Text>
+
+            <MenuDivider />
             <MenuItem
               onClick={toggleColorMode}
               icon={colorMode === 'light' ? <SunIcon /> : <MoonIcon />}

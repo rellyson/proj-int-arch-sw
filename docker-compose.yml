@@ -10,13 +10,13 @@ services:
   keycloak:
     container_name: keycloak_arch_sw
     image: quay.io/keycloak/keycloak:19.0.1
-    command: start-dev
+    command: start-dev --proxy passthrough --db-url-host pg_arch_sw --db-url-port 5432 --db-username keycloak --db-password foobar
     ports:
       - 8080:8080
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      - DB_VENDOR=h2
+      - DB_VENDOR=postgres
 
   localstack:
     container_name: localstack_arch_sw
@@ -42,3 +42,10 @@ services:
       - core/.env
     volumes:
       - ./core/:/src/app
+
+  db:
+    image: postgres:10-alpine
+    container_name: pg_arch_sw
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: foobar

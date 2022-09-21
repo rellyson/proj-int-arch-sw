@@ -6,7 +6,7 @@ import NotFound from '../pages/NotFound'
 import SignIn from '../pages/SignIn'
 import { isAuthenticated } from '../services/auth'
 import { RequireAuth } from './RequireAuth'
-import { SsoCallback } from './SsoCallback'
+import SsoCallback from './SsoCallback'
 
 const RouteStack: FC = () => {
   return (

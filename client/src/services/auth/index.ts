@@ -1,5 +1,6 @@
 import { axiosClient } from '../api'
 import Cookies from 'js-cookie'
+import config from '../../config'
 
 export const SESSION_TOKEN = 'pucpass-session-token'
 
@@ -29,39 +30,13 @@ export const logOut = (): void => {
   window.location.href = '/signin'
 }
 
-export const authenticate = async (username: string, password: string): Promise<any> => {
-  return await axiosClient
-    .post(
-      '/idp/protocol/openid-connect/token?scopes=profile',
-      new URLSearchParams({
-        username,
-        password,
-        client_id: 'client-app',
-        grant_type: 'password',
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      },
-    )
-    .then((res) => {
-      const date = new Date()
-      date.setTime(date.getTime() + 5 * 60 * 1000)
-      Cookies.set(SESSION_TOKEN, res.data.access_token, { expires: date })
-      return res.data
-    })
-    .catch((err) => {
-      throw err
-    })
-}
-
 export const getTokenInfo = async (): Promise<UserInfo> => {
   return await axiosClient
-    .get('/idp/protocol/openid-connect/userinfo', {
+    .get('/protocol/openid-connect/userinfo?', {
       headers: {
         Authorization: `Bearer ${Cookies.get(SESSION_TOKEN)}`,
       },
+      baseURL: config.IDP_URL,
     })
     .then((res) => res.data as UserInfo)
     .catch((err) => {

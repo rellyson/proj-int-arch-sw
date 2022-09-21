@@ -1,7 +1,7 @@
 import React, { FC, Fragment, useLayoutEffect } from 'react'
 import { setSessionToken } from '../services/auth'
 
-export const SsoCallback: FC = () => {
+const SsoCallback: FC = () => {
   useLayoutEffect(() => {
     const query = new URLSearchParams(location.hash)
     setSessionToken(query.get('access_token')!)
@@ -11,3 +11,5 @@ export const SsoCallback: FC = () => {
 
   return <Fragment />
 }
+
+export default SsoCallback

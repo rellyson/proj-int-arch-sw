@@ -28,7 +28,9 @@ const SignIn: FC = () => {
           </Text>
           <Stack spacing={2} mt="8">
             <Button
-              onClick={() => (window.location.href = config.IDP_SSO_URL)}
+              onClick={() =>
+                (window.location.href = `${config.IDP_URL}/protocol/openid-connect/auth?client_id=${config.IDP_CLIENT_ID}&redirect_uri=${config.IDP_REDIRECT_URI}&response_type=token&scope=profile&kc_locale=pt-BR`)
+              }
               bg="blue.600"
               _active={{ bg: 'blue.700' }}
               _hover={{ bg: 'blue.700' }}
