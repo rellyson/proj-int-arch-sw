@@ -12,19 +12,23 @@ import {
   Td,
   IconButton,
   Link,
+  Tooltip,
 } from '@chakra-ui/react'
 import React, { FC, useEffect, useState } from 'react'
 import NavBar from '../../components/Navbar'
 import './styles.css'
 import { AddIcon, CopyIcon, DeleteIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { BiHide, BiShow } from 'react-icons/bi'
+import { AiOutlineSecurityScan } from 'react-icons/ai'
 import NewItemModal from '../../components/NewItemModal'
 import { deleteVaultItem, getVaultItems, VaultItem } from '../../services/vaults'
 import { formatDate } from '../../utils/date'
+import { checkPasswordHaveBeenPwned } from '../../services/security'
 
 const Home: FC = () => {
   const toast = useToast()
   const [isLoading, setIsLoading] = useState(true)
+  const [checkingPassword, setCheckingPassword] = useState(false)
   const [vaultItems, setVaultItems] = useState([] as any)
   const [openModal, setOpenModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -38,6 +42,24 @@ const Home: FC = () => {
       duration: 3000,
       isClosable: true,
       position: 'top',
+    })
+  }
+
+  const checkPasswordIntegrity = async (password: string) => {
+    setCheckingPassword(true)
+    await checkPasswordHaveBeenPwned(password).then((pwnedNumbers) => {
+      toast({
+        title:
+          pwnedNumbers > 0
+            ? `Senha comprometida. Recomenda-se trocar a senha para evitar problemas de segurança.`
+            : 'Sua senha é segura.',
+        status: pwnedNumbers > 0 ? 'warning' : 'success',
+        duration: 4000,
+        isClosable: true,
+        position: 'top',
+      })
+
+      setCheckingPassword(false)
     })
   }
 
@@ -157,44 +179,66 @@ const Home: FC = () => {
                     ),
                   )}
                   <Td align="center">
-                    <IconButton
-                      bg="blackAlpha.300"
-                      _active={{ bg: 'blackAlpha.400' }}
-                      _hover={{ bg: 'blackAlpha.400' }}
-                      aria-label="hide-password"
-                      icon={showPassword ? <BiHide /> : <BiShow />}
-                      onClick={() => {
-                        setShowPassword(!showPassword)
-                      }}
-                      ml="2"
-                      w="10%"
-                    ></IconButton>
+                    <Tooltip label="Conferir segurança da senha">
+                      <IconButton
+                        isLoading={checkingPassword}
+                        bg="blackAlpha.300"
+                        _active={{ bg: 'blackAlpha.400' }}
+                        _hover={{ bg: 'blackAlpha.400' }}
+                        aria-label="check-password"
+                        icon={<AiOutlineSecurityScan />}
+                        onClick={() => {
+                          checkPasswordIntegrity(item.Senha)
+                        }}
+                        ml="2"
+                        w="10%"
+                      ></IconButton>
+                    </Tooltip>
 
-                    <IconButton
-                      bg="blackAlpha.300"
-                      _active={{ bg: 'blackAlpha.400' }}
-                      _hover={{ bg: 'blackAlpha.400' }}
-                      aria-label="copy-password"
-                      icon={<CopyIcon />}
-                      onClick={() => {
-                        copyToClipboard(item.Senha)
-                      }}
-                      ml="2"
-                      w="10%"
-                    ></IconButton>
+                    <Tooltip label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>
+                      <IconButton
+                        bg="blackAlpha.300"
+                        _active={{ bg: 'blackAlpha.400' }}
+                        _hover={{ bg: 'blackAlpha.400' }}
+                        aria-label="hide-password"
+                        icon={showPassword ? <BiHide /> : <BiShow />}
+                        onClick={() => {
+                          setShowPassword(!showPassword)
+                        }}
+                        ml="2"
+                        w="10%"
+                      ></IconButton>
+                    </Tooltip>
 
-                    <IconButton
-                      bg="blackAlpha.300"
-                      _active={{ bg: 'blackAlpha.400' }}
-                      _hover={{ bg: 'blackAlpha.400' }}
-                      aria-label="delete-item"
-                      icon={<DeleteIcon color="red.400" />}
-                      onClick={() => {
-                        deleteItem(item.Id)
-                      }}
-                      ml="2"
-                      w="10%"
-                    ></IconButton>
+                    <Tooltip label="Copiar senha">
+                      <IconButton
+                        bg="blackAlpha.300"
+                        _active={{ bg: 'blackAlpha.400' }}
+                        _hover={{ bg: 'blackAlpha.400' }}
+                        aria-label="copy-password"
+                        icon={<CopyIcon />}
+                        onClick={() => {
+                          copyToClipboard(item.Senha)
+                        }}
+                        ml="2"
+                        w="10%"
+                      ></IconButton>
+                    </Tooltip>
+
+                    <Tooltip label="Remover item">
+                      <IconButton
+                        bg="blackAlpha.300"
+                        _active={{ bg: 'blackAlpha.400' }}
+                        _hover={{ bg: 'blackAlpha.400' }}
+                        aria-label="delete-item"
+                        icon={<DeleteIcon color="red.400" />}
+                        onClick={() => {
+                          deleteItem(item.Id)
+                        }}
+                        ml="2"
+                        w="10%"
+                      ></IconButton>
+                    </Tooltip>
                   </Td>
                 </Tr>
               ))

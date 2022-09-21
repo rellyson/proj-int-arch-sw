@@ -16,6 +16,7 @@
     "@emotion/styled": "^11",
     "axios": "^0.24.0",
     "framer-motion": "^6",
+    "hibp": "^11.1.0",
     "history": "5",
     "js-cookie": "^3.0.1",
     "react": "^18.0.0",
